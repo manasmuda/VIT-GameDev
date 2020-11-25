@@ -6,11 +6,12 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
 
-    public CanvasGroup batballPanel;
     public CanvasGroup ballTypePanel;
-    public CanvasGroup bowlingPanel;
+    //public CanvasGroup bowlingPanel;
 
     public CanvasGroup gridPanel;
+
+    public CanvasGroup runsPanel;
 
     public Button batButton;
     public Button ballButton;
@@ -20,8 +21,7 @@ public class GameManager : MonoBehaviour
 
     public Text ballGridText;
 
-    public bool currentBat = false;
-
+    
     public int ballsLeft = 30;
 
     private string cBallType = "spin";
@@ -40,30 +40,33 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         HidePanel(gridPanel);
-        HidePanel(ballTypePanel);
-        HidePanel(bowlingPanel);
-        ShowPanel(batballPanel);
+        HidePanel(runsPanel);
+        ShowPanel(ballTypePanel);
+        //HidePanel(bowlingPanel);
+        
         batButton.onClick.AddListener(ChooseBat);
         ballButton.onClick.AddListener(ChooseBall);
         spinButton.onClick.AddListener(delegate { BallTypeChoose(true); });
         fastButton.onClick.AddListener(delegate { BallTypeChoose(false); });
-        Debug.Log("Start Finished");
+        ballsLeft = 30;
     }
 
     public void GridSelected(int value)
     {
         Debug.Log(value);
-        ShowPanel(bowlingPanel);
+        //ShowPanel(bowlingPanel);
         ballGridText.text = cBallType + " ball " + value;
-        StartCoroutine(HideDisplaySlow());
-        BallOver();
+        StartCoroutine(HideBallDisplaySlow());
+        //BallOver();
     }
 
-    IEnumerator HideDisplaySlow()
+    IEnumerator HideBallDisplaySlow()
     {
         yield return new WaitForSeconds(1f);
-        HidePanel(bowlingPanel);
+        //HidePanel(bowlingPanel);
         ballGridText.text = "";
+        HidePanel(gridPanel);
+        ShowPanel(runsPanel);
     }
 
     void BallTypeChoose(bool spin)
@@ -81,6 +84,40 @@ public class GameManager : MonoBehaviour
         //ShowPanel(bowlingPanel);
     }
 
+    public void BatRunsSelected(int value,int prob)
+    {
+
+        float random = Random.Range(0f, 100f);
+        if (random < prob)
+        {
+            ballGridText.text = value + " RUNS";
+        }
+        else
+        {
+            int r2 = Random.Range(0, 2);
+            if (r2 == 0)
+            {
+                ballGridText.text = "OUT";
+            }
+            else
+            {
+                ballGridText.text="MISS";
+            }
+        }
+        HidePanel(runsPanel);
+        StartCoroutine(HideBatDisplaySlow());
+    }
+
+    IEnumerator HideBatDisplaySlow()
+    {
+        yield return new WaitForSeconds(1f);
+        //HidePanel(bowlingPanel);
+        ballGridText.text = "";
+        
+        ShowPanel(gridPanel);
+        BallOver();
+    }
+
     void BallOver()
     {
         ballsLeft--;
@@ -89,7 +126,7 @@ public class GameManager : MonoBehaviour
             if (ballsLeft % 6 == 0)
             {
                 HidePanel(gridPanel);
-                HidePanel(bowlingPanel);
+                //HidePanel(bowlingPanel);
                 ShowPanel(ballTypePanel);
             }
             else
@@ -105,16 +142,16 @@ public class GameManager : MonoBehaviour
     
     void ChooseBat()
     {
-        currentBat = true;
+        
         ballsLeft = 30;
     }
 
     void ChooseBall()
     {
         Debug.Log("Ball Choose");
-        currentBat = false;
+        
         ballsLeft = 30;
-        HidePanel(batballPanel);
+       // HidePanel(batballPanel);
         ShowPanel(ballTypePanel);
     }
 
