@@ -21,8 +21,14 @@ public class GameManager : MonoBehaviour
 
     public Text ballGridText;
 
-    
+    public Text scoreText;
+    public Text oversText;
+
     public int ballsLeft = 30;
+
+    public int wickets = 0;
+
+    public int runs = 0;
 
     private string cBallType = "spin";
 
@@ -49,6 +55,8 @@ public class GameManager : MonoBehaviour
         spinButton.onClick.AddListener(delegate { BallTypeChoose(true); });
         fastButton.onClick.AddListener(delegate { BallTypeChoose(false); });
         ballsLeft = 30;
+        runs = 0;
+        wickets = 0;
     }
 
     public void GridSelected(int value)
@@ -91,6 +99,7 @@ public class GameManager : MonoBehaviour
         if (random < prob)
         {
             ballGridText.text = value + " RUNS";
+            runs = runs + value;
         }
         else
         {
@@ -98,6 +107,7 @@ public class GameManager : MonoBehaviour
             if (r2 == 0)
             {
                 ballGridText.text = "OUT";
+                wickets++;
             }
             else
             {
@@ -136,8 +146,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-
+            
         }
+
     }
     
     void ChooseBat()
@@ -158,7 +169,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        scoreText.text = "SCORE: "+runs + "/" + wickets;
+        int overs = (30 - ballsLeft) / 6;
+        int balls = (30 - ballsLeft) % 6;
+        oversText.text ="OVERS: "+ overs + "." + balls + "(5)";
     }
 
     void ShowPanel(CanvasGroup x)
