@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
 
     private string cBallType = "spin";
 
+    public GameObject ball;
+
     //public List<Button> gridButtons = new List<Button>();
 
     public static GameManager instance;
@@ -70,8 +72,10 @@ public class GameManager : MonoBehaviour
 
     IEnumerator HideBallDisplaySlow()
     {
+        MovePiece(ball, new Vector3(0, 1, 17), 1);
         yield return new WaitForSeconds(1f);
         //HidePanel(bowlingPanel);
+        
         ballGridText.text = "";
         HidePanel(gridPanel);
         ShowPanel(runsPanel);
@@ -148,7 +152,7 @@ public class GameManager : MonoBehaviour
         {
             
         }
-
+        ball.transform.position = new Vector3(-2f, 1, -17f);
     }
     
     void ChooseBat()
@@ -173,6 +177,19 @@ public class GameManager : MonoBehaviour
         int overs = (30 - ballsLeft) / 6;
         int balls = (30 - ballsLeft) % 6;
         oversText.text ="OVERS: "+ overs + "." + balls + "(5)";
+    }
+
+    public IEnumerator MovePiece(GameObject objectToMove, Vector3 end, float seconds)
+    {
+        float elapsedTime = 0;
+        Vector3 startingPos = objectToMove.transform.position;
+        while (elapsedTime < seconds)
+        {
+            objectToMove.transform.position = Vector3.Lerp(startingPos, end, (elapsedTime / seconds));
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        objectToMove.transform.position = end;
     }
 
     void ShowPanel(CanvasGroup x)
