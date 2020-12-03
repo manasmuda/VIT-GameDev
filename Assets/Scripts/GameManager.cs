@@ -30,9 +30,13 @@ public class GameManager : MonoBehaviour
 
     public int runs = 0;
 
+    public int target = 60;
+
     private string cBallType = "spin";
 
     public GameObject ball;
+
+    public GameObject pitchCamera;
 
     //public List<Button> gridButtons = new List<Button>();
 
@@ -66,13 +70,13 @@ public class GameManager : MonoBehaviour
         Debug.Log(value);
         //ShowPanel(bowlingPanel);
         ballGridText.text = cBallType + " ball " + value;
+        StartCoroutine(MovePiece(ball, new Vector3(-4.5f, 3f, 17f), 1f));
         StartCoroutine(HideBallDisplaySlow());
         //BallOver();
     }
 
     IEnumerator HideBallDisplaySlow()
     {
-        MovePiece(ball, new Vector3(0, 1, 17), 1);
         yield return new WaitForSeconds(1f);
         //HidePanel(bowlingPanel);
         
@@ -96,12 +100,14 @@ public class GameManager : MonoBehaviour
         //ShowPanel(bowlingPanel);
     }
 
-    public void BatRunsSelected(int value,int prob)
+    public void BatRunsSelected(int value,int prob,Vector3 dest)
     {
 
         float random = Random.Range(0f, 100f);
         if (random < prob)
         {
+            pitchCamera.SetActive(false);
+            StartCoroutine(MovePiece(ball, dest, 1f));
             ballGridText.text = value + " RUNS";
             runs = runs + value;
         }
@@ -120,6 +126,7 @@ public class GameManager : MonoBehaviour
         }
         HidePanel(runsPanel);
         StartCoroutine(HideBatDisplaySlow());
+        
     }
 
     IEnumerator HideBatDisplaySlow()
@@ -135,6 +142,18 @@ public class GameManager : MonoBehaviour
     void BallOver()
     {
         ballsLeft--;
+        if (wickets == 5)
+        {
+            HidePanel(gridPanel);
+            HidePanel(runsPanel);
+            ballGridText.text = "Bowlers Win";
+        }
+        if (runs >= target)
+        {
+            HidePanel(gridPanel);
+            HidePanel(runsPanel);
+            ballGridText.text = "Batsmen Win";
+        }
         if (ballsLeft > 0)
         {
             if (ballsLeft % 6 == 0)
@@ -150,9 +169,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            
+            HidePanel(gridPanel);
+            HidePanel(runsPanel);
+            ballGridText.text = "Bowlers Win";
         }
-        ball.transform.position = new Vector3(-2f, 1, -17f);
+        ball.transform.position = new Vector3(-4.5f, 3f, -17f);
+        pitchCamera.SetActive(true);
     }
     
     void ChooseBat()
